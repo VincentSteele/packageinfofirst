@@ -11,6 +11,12 @@
     <depends>com.intellij.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable
+                parentId="tools"
+                id="de.vinste.packageinfofirst.settings"
+                displayName="Package Info First"
+                instance="de.vinste.packageinfofirst.PackageInfoConfigurable"/>
+        <fileIconProvider implementation="de.vinste.packageinfofirst.PackageInfoIconProvider"/>
         <treeStructureProvider
                 implementation="de.vinste.packageinfofirst.PackageInfoTreeStructureProvider"
                 order="last"/>
