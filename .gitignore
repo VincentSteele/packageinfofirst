@@ -1,17 +1,8 @@
-# IntelliJ IDEA
+.gradle/
 .idea/
-*.iml
+.intellijPlatform/
+build/
 out/
 
-# Gradle
-.gradle/
-build/
+*.iml
 
-# Local environment files
-.env
-.env.*
-!.env.example
-
-# Operating system files
-.DS_Store
-Thumbs.db
