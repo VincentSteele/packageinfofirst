@@ -11,7 +11,10 @@ import com.intellij.psi.JavaDirectoryService;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
+import com.intellij.psi.PsiPackage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.jps.model.java.JavaModuleSourceRootTypes;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,23 +33,48 @@ public final class PackageInfoTreeStructureProvider implements TreeStructureProv
             @NotNull Collection<AbstractTreeNode<?>> children,
             ViewSettings settings
     ) {
-        List<AbstractTreeNode<?>> modifiedChildren = null;
-        int index = 0;
-
+        boolean containsPackageInfo = false;
         for (AbstractTreeNode<?> child : children) {
             if (child instanceof PsiFileNode fileNode && isJavaPackageInfo(fileNode.getValue())) {
-                if (modifiedChildren == null) {
-                    modifiedChildren = new ArrayList<>(children);
-                }
-                modifiedChildren.set(index, new PackageInfoFileNode(fileNode, settings));
+                containsPackageInfo = true;
+                break;
             }
-            index++;
         }
 
-        return modifiedChildren != null ? modifiedChildren : children;
+        if (!containsPackageInfo) {
+            return children;
+        }
+
+        boolean hidePackageInfo = PackageInfoSettings.getInstance().isPackageInfoHidden();
+        List<AbstractTreeNode<?>> modifiedChildren = new ArrayList<>(children.size());
+        for (AbstractTreeNode<?> child : children) {
+            if (child instanceof PsiFileNode fileNode && isJavaPackageInfo(fileNode.getValue())) {
+                if (!hidePackageInfo) {
+                    modifiedChildren.add(new PackageInfoFileNode(fileNode, settings));
+                }
+            } else {
+                modifiedChildren.add(child);
+            }
+        }
+        return modifiedChildren;
     }
 
-    static boolean isJavaPackageInfo(PsiFile file) {
+    static @Nullable PsiJavaFile findPackageInfo(@NotNull PsiDirectory directory) {
+        PsiFile file = directory.findFile(PACKAGE_INFO_FILE_NAME);
+        return isJavaPackageInfo(file) ? (PsiJavaFile)file : null;
+    }
+
+    static @Nullable PsiJavaFile findPackageInfo(@NotNull PsiPackage psiPackage) {
+        for (PsiDirectory directory : psiPackage.getDirectories()) {
+            PsiJavaFile packageInfo = findPackageInfo(directory);
+            if (packageInfo != null) {
+                return packageInfo;
+            }
+        }
+        return null;
+    }
+
+    static boolean isJavaPackageInfo(@Nullable PsiFile file) {
         if (!(file instanceof PsiJavaFile) || !PACKAGE_INFO_FILE_NAME.equals(file.getName())) {
             return false;
         }
@@ -57,11 +85,13 @@ public final class PackageInfoTreeStructureProvider implements TreeStructureProv
 
     static boolean isJavaPackageDirectory(PsiDirectory directory) {
         VirtualFile virtualFile = directory.getVirtualFile();
-        boolean belongsToProjectSources = ProjectRootManager.getInstance(directory.getProject())
-                .getFileIndex()
-                .getSourceRootForFile(virtualFile) != null;
+        boolean belongsToJavaSources = JavaModuleSourceRootTypes.SOURCES.contains(
+                ProjectRootManager.getInstance(directory.getProject())
+                        .getFileIndex()
+                        .getContainingSourceRootType(virtualFile)
+        );
 
-        return belongsToProjectSources
+        return belongsToJavaSources
                 && JavaDirectoryService.getInstance().getPackage(directory) != null;
     }
 }

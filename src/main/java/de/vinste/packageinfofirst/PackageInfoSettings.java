@@ -24,6 +24,14 @@ public final class PackageInfoSettings implements PersistentStateComponent<Packa
         state.customIconEnabled = customIconEnabled;
     }
 
+    public boolean isPackageInfoHidden() {
+        return state.packageInfoHidden;
+    }
+
+    public void setPackageInfoHidden(boolean packageInfoHidden) {
+        state.packageInfoHidden = packageInfoHidden;
+    }
+
     @Override
     public @NotNull SettingsState getState() {
         return state;
@@ -36,5 +44,6 @@ public final class PackageInfoSettings implements PersistentStateComponent<Packa
 
     public static final class SettingsState {
         public boolean customIconEnabled = true;
+        public boolean packageInfoHidden = false;
     }
 }

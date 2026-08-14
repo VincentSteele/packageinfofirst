@@ -4,7 +4,7 @@
     <vendor>Vinste</vendor>
 
     <description><![CDATA[
-        Keeps Java package-info.java files at the top of their package in the standard Project view.
+        Keeps Java package-info.java files easy to find and edit in the standard Project view.
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
@@ -17,8 +17,37 @@
                 displayName="Package Info First"
                 instance="de.vinste.packageinfofirst.PackageInfoConfigurable"/>
         <fileIconProvider implementation="de.vinste.packageinfofirst.PackageInfoIconProvider"/>
+        <projectViewNodeDecorator
+                implementation="de.vinste.packageinfofirst.PackageInfoProjectViewNodeDecorator"/>
         <treeStructureProvider
                 implementation="de.vinste.packageinfofirst.PackageInfoTreeStructureProvider"
                 order="last"/>
     </extensions>
+
+    <actions>
+        <action
+                id="de.vinste.packageinfofirst.addPackageInfo"
+                class="de.vinste.packageinfofirst.AddPackageInfoAction"
+                text="Add Package Info"
+                description="Create package-info.java for this package"
+                icon="/icons/packageInfo.svg">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+        <action
+                id="de.vinste.packageinfofirst.editPackageInfo"
+                class="de.vinste.packageinfofirst.EditPackageInfoAction"
+                text="Edit Package Info"
+                description="Open this package's package-info.java in a preview tab"
+                icon="/icons/packageInfo.svg">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+        <action
+                id="de.vinste.packageinfofirst.deletePackageInfo"
+                class="de.vinste.packageinfofirst.DeletePackageInfoAction"
+                text="Delete Package Info"
+                description="Delete this package's hidden package-info.java"
+                icon="/icons/packageInfo.svg">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+    </actions>
 </idea-plugin>

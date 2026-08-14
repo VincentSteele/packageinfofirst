@@ -12,10 +12,11 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import java.awt.GridLayout;
 
 public final class PackageInfoConfigurable implements Configurable {
     private JCheckBox customIconCheckBox;
+    private JCheckBox hidePackageInfoCheckBox;
 
     @Override
     public @Nls String getDisplayName() {
@@ -26,36 +27,50 @@ public final class PackageInfoConfigurable implements Configurable {
     public @Nullable JComponent createComponent() {
         customIconCheckBox = new JCheckBox("Show the custom icon for package-info.java");
         customIconCheckBox.setSelected(PackageInfoSettings.getInstance().isCustomIconEnabled());
+        hidePackageInfoCheckBox = new JCheckBox("Hide package-info.java from the Project view");
+        hidePackageInfoCheckBox.setSelected(PackageInfoSettings.getInstance().isPackageInfoHidden());
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(customIconCheckBox, BorderLayout.NORTH);
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(customIconCheckBox);
+        panel.add(hidePackageInfoCheckBox);
         return panel;
     }
 
     @Override
     public boolean isModified() {
-        return customIconCheckBox != null
-                && customIconCheckBox.isSelected() != PackageInfoSettings.getInstance().isCustomIconEnabled();
+        if (customIconCheckBox == null || hidePackageInfoCheckBox == null) {
+            return false;
+        }
+
+        PackageInfoSettings settings = PackageInfoSettings.getInstance();
+        return customIconCheckBox.isSelected() != settings.isCustomIconEnabled()
+                || hidePackageInfoCheckBox.isSelected() != settings.isPackageInfoHidden();
     }
 
     @Override
     public void apply() {
-        if (customIconCheckBox == null) {
+        if (customIconCheckBox == null || hidePackageInfoCheckBox == null) {
             return;
         }
 
         PackageInfoSettings settings = PackageInfoSettings.getInstance();
         boolean customIconEnabled = customIconCheckBox.isSelected();
-        if (settings.isCustomIconEnabled() == customIconEnabled) {
+        boolean packageInfoHidden = hidePackageInfoCheckBox.isSelected();
+        boolean iconChanged = settings.isCustomIconEnabled() != customIconEnabled;
+        boolean visibilityChanged = settings.isPackageInfoHidden() != packageInfoHidden;
+        if (!iconChanged && !visibilityChanged) {
             return;
         }
 
         settings.setCustomIconEnabled(customIconEnabled);
+        settings.setPackageInfoHidden(packageInfoHidden);
         for (Project project : ProjectManager.getInstance().getOpenProjects()) {
             ProjectView.getInstance(project).refresh();
-            FileEditorManagerEx fileEditorManager = FileEditorManagerEx.getInstanceEx(project);
-            for (VirtualFile file : fileEditorManager.getOpenFiles()) {
-                fileEditorManager.updateFilePresentation(file);
+            if (iconChanged) {
+                FileEditorManagerEx fileEditorManager = FileEditorManagerEx.getInstanceEx(project);
+                for (VirtualFile file : fileEditorManager.getOpenFiles()) {
+                    fileEditorManager.updateFilePresentation(file);
+                }
             }
         }
     }
@@ -65,10 +80,14 @@ public final class PackageInfoConfigurable implements Configurable {
         if (customIconCheckBox != null) {
             customIconCheckBox.setSelected(PackageInfoSettings.getInstance().isCustomIconEnabled());
         }
+        if (hidePackageInfoCheckBox != null) {
+            hidePackageInfoCheckBox.setSelected(PackageInfoSettings.getInstance().isPackageInfoHidden());
+        }
     }
 
     @Override
     public void disposeUIResources() {
         customIconCheckBox = null;
+        hidePackageInfoCheckBox = null;
     }
 }
