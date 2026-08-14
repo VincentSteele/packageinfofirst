@@ -1,4 +1,5 @@
 import org.gradle.api.initialization.resolve.RepositoriesMode
+import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
 
 pluginManagement {
     repositories {
@@ -18,9 +19,9 @@ dependencyResolutionManagement {
         intellijPlatform {
             defaultRepositories()
             localPlatformArtifacts()
+            intellijDependencies()
         }
     }
 }
 
 rootProject.name = "package-info-first"
-

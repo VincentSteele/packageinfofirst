@@ -4,15 +4,15 @@
     <vendor>Vinste</vendor>
 
     <description><![CDATA[
-        Keeps Java package-info.java files directly below child packages and above other files
-        in the standard Project view.
+        Keeps Java package-info.java files at the top of their package in the standard Project view.
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <treeStructureProvider implementation="de.vinste.packageinfofirst.PackageInfoTreeStructureProvider"/>
+        <treeStructureProvider
+                implementation="de.vinste.packageinfofirst.PackageInfoTreeStructureProvider"
+                order="last"/>
     </extensions>
 </idea-plugin>
-

@@ -2,7 +2,6 @@ package de.vinste.packageinfofirst;
 
 import com.intellij.ide.projectView.TreeStructureProvider;
 import com.intellij.ide.projectView.ViewSettings;
-import com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode;
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.openapi.project.DumbAware;
@@ -19,8 +18,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Replaces real Java {@code package-info.java} files with a Project View node
- * whose sort position is directly below child packages.
+ * Pins real Java {@code package-info.java} files to the top of their package in
+ * the Project view.
  */
 public final class PackageInfoTreeStructureProvider implements TreeStructureProvider, DumbAware {
     private static final String PACKAGE_INFO_FILE_NAME = "package-info.java";
@@ -31,26 +30,20 @@ public final class PackageInfoTreeStructureProvider implements TreeStructureProv
             @NotNull Collection<AbstractTreeNode<?>> children,
             ViewSettings settings
     ) {
-        // PsiDirectoryNode is the representation used by the standard Project pane.
-        // Restricting the provider here avoids changing alternate project views.
-        if (!(parent instanceof PsiDirectoryNode)) {
-            return children;
-        }
-
-        List<AbstractTreeNode<?>> updatedChildren = null;
+        List<AbstractTreeNode<?>> modifiedChildren = null;
         int index = 0;
 
         for (AbstractTreeNode<?> child : children) {
             if (child instanceof PsiFileNode fileNode && isJavaPackageInfo(fileNode.getValue())) {
-                if (updatedChildren == null) {
-                    updatedChildren = new ArrayList<>(children);
+                if (modifiedChildren == null) {
+                    modifiedChildren = new ArrayList<>(children);
                 }
-                updatedChildren.set(index, new PackageInfoFileNode(fileNode, settings));
+                modifiedChildren.set(index, new PackageInfoFileNode(fileNode, settings));
             }
             index++;
         }
 
-        return updatedChildren != null ? updatedChildren : children;
+        return modifiedChildren != null ? modifiedChildren : children;
     }
 
     static boolean isJavaPackageInfo(PsiFile file) {
@@ -58,13 +51,13 @@ public final class PackageInfoTreeStructureProvider implements TreeStructureProv
             return false;
         }
 
-        VirtualFile virtualFile = file.getVirtualFile();
         PsiDirectory directory = file.getContainingDirectory();
-        if (virtualFile == null || directory == null) {
-            return false;
-        }
+        return directory != null && isJavaPackageDirectory(directory);
+    }
 
-        boolean belongsToProjectSources = ProjectRootManager.getInstance(file.getProject())
+    static boolean isJavaPackageDirectory(PsiDirectory directory) {
+        VirtualFile virtualFile = directory.getVirtualFile();
+        boolean belongsToProjectSources = ProjectRootManager.getInstance(directory.getProject())
                 .getFileIndex()
                 .getSourceRootForFile(virtualFile) != null;
 
@@ -72,4 +65,3 @@ public final class PackageInfoTreeStructureProvider implements TreeStructureProv
                 && JavaDirectoryService.getInstance().getPackage(directory) != null;
     }
 }
-

@@ -2,31 +2,30 @@ package de.vinste.packageinfofirst;
 
 import com.intellij.ide.projectView.NodeSortOrder;
 import com.intellij.ide.projectView.NodeSortSettings;
+import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ViewSettings;
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A regular file node with a sort position immediately after package folders.
+ * Project View node that places {@code package-info.java} before every standard
+ * node category.
  */
 final class PackageInfoFileNode extends PsiFileNode {
-    private static final int AFTER_PACKAGE_FOLDERS_WEIGHT = 4;
+    private static final String DISPLAY_NAME = "Package Info";
 
     PackageInfoFileNode(PsiFileNode original, ViewSettings settings) {
         super(original.getProject(), original.getValue(), settings);
-        setParent(original.getParent());
+    }
+
+    @Override
+    protected void updateImpl(@NotNull PresentationData data) {
+        super.updateImpl(data);
+        data.setPresentableText(DISPLAY_NAME);
     }
 
     @Override
     public @NotNull NodeSortOrder getSortOrder(@NotNull NodeSortSettings settings) {
-        return settings.isFoldersAlwaysOnTop() ? NodeSortOrder.FOLDER : super.getSortOrder(settings);
-    }
-
-    @Override
-    public int getTypeSortWeight(boolean sortByType) {
-        // IntelliJ package folders use weight 3. A slightly larger non-zero
-        // weight keeps this node below them while it remains above file nodes.
-        return AFTER_PACKAGE_FOLDERS_WEIGHT;
+        return NodeSortOrder.PROJECT_ROOT;
     }
 }
-
