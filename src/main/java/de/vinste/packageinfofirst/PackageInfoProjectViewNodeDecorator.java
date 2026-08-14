@@ -13,13 +13,13 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.Icon;
 
-/** Adds a small documentation marker to Java packages with package-info.java. */
+/** Adds a small marker to Java packages with package-info.java. */
 public final class PackageInfoProjectViewNodeDecorator implements ProjectViewNodeDecorator {
-    private static final Icon DOCUMENTATION_ICON = IconLoader.getIcon(
+    private static final Icon PACKAGE_INFO_ICON = IconLoader.getIcon(
             "/icons/packageInfo.svg",
             PackageInfoProjectViewNodeDecorator.class
     );
-    private static final Icon BADGE = IconUtil.scale(DOCUMENTATION_ICON, null, 0.5f);
+    private static final Icon BADGE = IconUtil.scale(PACKAGE_INFO_ICON, null, 0.5f);
 
     @Override
     public void decorate(@NotNull ProjectViewNode<?> node, @NotNull PresentationData data) {

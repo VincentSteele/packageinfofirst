@@ -45,7 +45,7 @@
                 id="de.vinste.packageinfofirst.deletePackageInfo"
                 class="de.vinste.packageinfofirst.DeletePackageInfoAction"
                 text="Delete Package Info"
-                description="Delete this package's hidden package-info.java"
+                description="Delete this package's package-info.java"
                 icon="/icons/packageInfo.svg">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </action>

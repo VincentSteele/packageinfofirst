@@ -1,17 +1,10 @@
 # Package Info First
+##### An exploration of AI-driven development and fixing a pet peeve
 
-An IntelliJ IDEA plugin that keeps a real Java `package-info.java` at the top of
-its package in the Project view, marks documented packages with a subtle badge,
-and provides **Add Package Info**, **Edit Package Info**, and (when the file is
-hidden) **Delete Package Info** package actions.
+// todo
 
-By default, the file remains visible as the first item in its package. Enable
-**Hide package-info.java from the Project view** under **Tools | Package Info
-First** to hide it and use the package context action to open it in a preview
-tab.
+An IntelliJ IDEA plugin that makes `package-info.java` easier to spot and manage.
+It pins the file to the top of its package in the Project view, gives it a
+dedicated icon, and adds a subtle badge to packages that contain one.
 
-# TITVC
-## This Is Totally Vibe-Coded
-
-##### IDRTCT
-I Did Read The Code Though
+And stuff. You know.

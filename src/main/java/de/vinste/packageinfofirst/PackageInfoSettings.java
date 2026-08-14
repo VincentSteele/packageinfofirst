@@ -32,6 +32,18 @@ public final class PackageInfoSettings implements PersistentStateComponent<Packa
         state.packageInfoHidden = packageInfoHidden;
     }
 
+    public boolean isContextActionsEnabled() {
+        return state.contextActionsEnabled;
+    }
+
+    public void setContextActionsEnabled(boolean contextActionsEnabled) {
+        state.contextActionsEnabled = contextActionsEnabled;
+    }
+
+    public boolean areContextActionsAvailable() {
+        return state.packageInfoHidden || state.contextActionsEnabled;
+    }
+
     @Override
     public @NotNull SettingsState getState() {
         return state;
@@ -45,5 +57,6 @@ public final class PackageInfoSettings implements PersistentStateComponent<Packa
     public static final class SettingsState {
         public boolean customIconEnabled = true;
         public boolean packageInfoHidden = false;
+        public boolean contextActionsEnabled = false;
     }
 }

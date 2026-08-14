@@ -26,7 +26,8 @@ public final class AddPackageInfoAction extends CreatePackageInfoAction {
         event.getPresentation().setText(ACTION_TEXT);
         IdeView view = event.getData(LangDataKeys.IDE_VIEW);
         PsiDirectory[] directories = view != null ? view.getDirectories() : PsiDirectory.EMPTY_ARRAY;
-        boolean canCreate = directories.length == 1
+        boolean canCreate = PackageInfoSettings.getInstance().areContextActionsAvailable()
+                && directories.length == 1
                 && directories[0].isWritable()
                 && JavaDirectoryService.getInstance().getPackage(directories[0]) != null
                 && ModuleUtilCore.findModuleForPsiElement(directories[0]) != null

@@ -25,7 +25,9 @@ public final class EditPackageInfoAction extends DumbAwareAction {
 
     @Override
     public void update(@NotNull AnActionEvent event) {
-        event.getPresentation().setEnabledAndVisible(findPackageInfo(event) != null);
+        boolean visible = PackageInfoSettings.getInstance().areContextActionsAvailable()
+                && findPackageInfo(event) != null;
+        event.getPresentation().setEnabledAndVisible(visible);
     }
 
     @Override

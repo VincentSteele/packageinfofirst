@@ -37,6 +37,7 @@ import java.util.List;
 
 public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeInsightFixtureTestCase {
     private boolean originalPackageInfoHidden;
+    private boolean originalContextActionsEnabled;
 
     @Override
     protected void setUp() throws Exception {
@@ -46,13 +47,17 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
 
         PackageInfoSettings settings = PackageInfoSettings.getInstance();
         originalPackageInfoHidden = settings.isPackageInfoHidden();
+        originalContextActionsEnabled = settings.isContextActionsEnabled();
         settings.setPackageInfoHidden(false);
+        settings.setContextActionsEnabled(true);
     }
 
     @Override
     protected void tearDown() throws Exception {
         try {
-            PackageInfoSettings.getInstance().setPackageInfoHidden(originalPackageInfoHidden);
+            PackageInfoSettings settings = PackageInfoSettings.getInstance();
+            settings.setPackageInfoHidden(originalPackageInfoHidden);
+            settings.setContextActionsEnabled(originalContextActionsEnabled);
         } finally {
             super.tearDown();
         }
@@ -228,7 +233,7 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
         assertEquals(packageInfoFile.getVirtualFile(), descriptor.getFile());
     }
 
-    public void testDeleteActionIsVisibleOnlyForHiddenPackageInfo() {
+    public void testDeleteActionFollowsContextToggleAndIsForcedOnWhenHidden() {
         PsiFile packageInfoFile = addJavaFile(
                 "com/documented/package-info.java",
                 "package com.documented;"
@@ -245,7 +250,12 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
         DeletePackageInfoAction action = new DeletePackageInfoAction();
         AnActionEvent visibleFileEvent = actionEvent(action, documentedDirectory);
         action.update(visibleFileEvent);
-        assertFalse(visibleFileEvent.getPresentation().isEnabledAndVisible());
+        assertTrue(visibleFileEvent.getPresentation().isEnabledAndVisible());
+
+        PackageInfoSettings.getInstance().setContextActionsEnabled(false);
+        AnActionEvent disabledEvent = actionEvent(action, documentedDirectory);
+        action.update(disabledEvent);
+        assertFalse(disabledEvent.getPresentation().isEnabledAndVisible());
 
         PackageInfoSettings.getInstance().setPackageInfoHidden(true);
         AnActionEvent documentedEvent = actionEvent(action, documentedDirectory);
@@ -257,8 +267,48 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
         assertFalse(undocumentedEvent.getPresentation().isEnabledAndVisible());
     }
 
-    public void testHideOptionDefaultsToOff() {
-        assertFalse(new PackageInfoSettings.SettingsState().packageInfoHidden);
+    public void testContextActionsCanBeDisabledOnlyWhilePackageInfoIsVisible() {
+        PsiFile packageInfoFile = addJavaFile(
+                "com/documented/package-info.java",
+                "package com.documented;"
+        );
+        PsiFile regularFile = addJavaFile(
+                "com/undocumented/Example.java",
+                "package com.undocumented;\nfinal class Example {}"
+        );
+        PsiDirectory documentedDirectory = packageInfoFile.getContainingDirectory();
+        PsiDirectory undocumentedDirectory = regularFile.getContainingDirectory();
+        assertNotNull(documentedDirectory);
+        assertNotNull(undocumentedDirectory);
+
+        PackageInfoSettings settings = PackageInfoSettings.getInstance();
+        settings.setContextActionsEnabled(false);
+
+        EditPackageInfoAction editAction = new EditPackageInfoAction();
+        AnActionEvent disabledEditEvent = actionEvent(editAction, documentedDirectory);
+        editAction.update(disabledEditEvent);
+        assertFalse(disabledEditEvent.getPresentation().isEnabledAndVisible());
+
+        AddPackageInfoAction addAction = new AddPackageInfoAction();
+        AnActionEvent disabledAddEvent = actionEvent(addAction, undocumentedDirectory);
+        addAction.update(disabledAddEvent);
+        assertFalse(disabledAddEvent.getPresentation().isEnabledAndVisible());
+
+        settings.setPackageInfoHidden(true);
+        AnActionEvent forcedEditEvent = actionEvent(editAction, documentedDirectory);
+        editAction.update(forcedEditEvent);
+        assertTrue(forcedEditEvent.getPresentation().isEnabledAndVisible());
+
+        AnActionEvent forcedAddEvent = actionEvent(addAction, undocumentedDirectory);
+        addAction.update(forcedAddEvent);
+        assertTrue(forcedAddEvent.getPresentation().isEnabledAndVisible());
+    }
+
+    public void testDefaultSettingsShowFileAndIconWithoutContextActions() {
+        PackageInfoSettings.SettingsState defaults = new PackageInfoSettings.SettingsState();
+        assertFalse(defaults.packageInfoHidden);
+        assertTrue(defaults.customIconEnabled);
+        assertFalse(defaults.contextActionsEnabled);
     }
 
     private List<AbstractTreeNode<?>> modify(List<AbstractTreeNode<?>> children) {

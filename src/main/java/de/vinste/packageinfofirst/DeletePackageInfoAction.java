@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaFile;
 import org.jetbrains.annotations.NotNull;
 
-/** Deletes a hidden package-info.java through IntelliJ's standard delete flow. */
+/** Deletes package-info.java through IntelliJ's standard delete flow. */
 public final class DeletePackageInfoAction extends DumbAwareAction {
     @Override
     public @NotNull ActionUpdateThread getActionUpdateThread() {
@@ -19,7 +19,7 @@ public final class DeletePackageInfoAction extends DumbAwareAction {
 
     @Override
     public void update(@NotNull AnActionEvent event) {
-        boolean visible = PackageInfoSettings.getInstance().isPackageInfoHidden()
+        boolean visible = PackageInfoSettings.getInstance().areContextActionsAvailable()
                 && EditPackageInfoAction.findPackageInfo(event) != null;
         event.getPresentation().setEnabledAndVisible(visible);
     }
@@ -27,7 +27,7 @@ public final class DeletePackageInfoAction extends DumbAwareAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         Project project = event.getProject();
-        if (project == null || !PackageInfoSettings.getInstance().isPackageInfoHidden()) {
+        if (project == null || !PackageInfoSettings.getInstance().areContextActionsAvailable()) {
             return;
         }
 
