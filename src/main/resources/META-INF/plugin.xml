@@ -5,17 +5,21 @@
 
     <description><![CDATA[
         An IntelliJ IDEA plugin that makes dealing with <code>package-info.java</code> a little less annoying.
+        <p>Choose how <code>package-info.java</code> appears in the Project view:</p>
         <ul>
-            <li>Pins <code>package-info.java</code> to the top of its package</li>
-            <li>Adds a subtle badge to packages containing <code>package-info.java</code></li>
-            <li>Provides an optional custom icon for <code>package-info.java</code></li>
-            <li>Adds package context menu actions for creating, editing, and deleting <code>package-info.java</code></li>
-            <li>Optionally hides <code>package-info.java</code> while keeping actions available from the package context menu</li>
+            <li><strong>Keep it visible:</strong> <code>package-info.java</code> is always pinned to the top of its package, so it is easy to find and access.</li>
+            <li><strong>Keep it out of the way:</strong> Hide <code>package-info.java</code> while a package badge keeps its presence visible and context menu actions let you create, edit, or delete the file.</li>
         </ul>
+        <p>When <code>package-info.java</code> is visible, the package badge and context-menu actions can also be enabled independently.</p>
+        <p>Configure the presentation and context menu options under <strong>Settings | Tools | Package Info First</strong>.</p>
     ]]></description>
 
     <change-notes><![CDATA[
-        <!-- TODO: Add version 0.6.0 change notes before release. -->
+        <h3>0.6.0</h3>
+        <ul>
+            <li>Added settings to independently control the package badge and the <em>Package Info</em> display name.</li>
+            <li>Package badges now turn red when <code>package-info.java</code> contains IDE-detected errors.</li>
+        </ul>
     ]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
