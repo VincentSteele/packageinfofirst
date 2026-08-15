@@ -10,7 +10,7 @@ An IntelliJ IDEA plugin that makes dealing with `package-info.java` a little les
 
 ## Installation
 
-Download [package-info-first-0.5.0.zip](releases/package-info-first-0.5.0.zip), then open
+Download the *package-info-first* zip from [the latest release](https://github.com/VincentSteele/packageinfofirst/releases/latest), then open
 **Settings | Plugins**, choose **Install Plugin from Disk**, and select the ZIP without extracting it.
 
 Currently supports IntelliJ IDEA 2024.2 and newer.
