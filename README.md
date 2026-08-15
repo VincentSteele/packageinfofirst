@@ -1,10 +1,20 @@
 # Package Info First
-##### An exploration of AI-driven development and fixing a pet peeve
 
-// todo
+An IntelliJ IDEA plugin that makes dealing with `package-info.java` a little less annoying.
 
-An IntelliJ IDEA plugin that makes `package-info.java` easier to spot and manage.
-It pins the file to the top of its package in the Project view, gives it a
-dedicated icon, and adds a subtle badge to packages that contain one.
+- Pins `package-info.java` to the top of its package
+- Adds a subtle badge to packages containing `package-info.java`
+- Provides an optional custom icon for `package-info.java`
+- Adds package context menu actions for creating, editing, and deleting `package-info.java`
+- Optionally hides `package-info.java` while keeping actions available from the package context menu
 
-And stuff. You know.
+## Installation
+
+Download [package-info-first-0.5.0.zip](releases/package-info-first-0.5.0.zip), then open
+**Settings | Plugins**, choose **Install Plugin from Disk**, and select the ZIP without extracting it.
+
+Currently supports IntelliJ IDEA 2024.2 and newer.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

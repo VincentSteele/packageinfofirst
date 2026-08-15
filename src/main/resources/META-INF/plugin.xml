@@ -1,11 +1,26 @@
-<idea-plugin>
+<idea-plugin url="https://github.com/VincentSteele/packageinfofirst">
     <id>de.vinste.packageinfofirst</id>
     <name>Package Info First</name>
-    <vendor>Vinste</vendor>
+    <vendor url="https://github.com/VincentSteele" email="vin.steele@proton.me">VincentSteele</vendor>
 
     <description><![CDATA[
-        Keeps Java package-info.java files easy to find and edit in the standard Project view.
+        An IntelliJ IDEA plugin that makes dealing with <code>package-info.java</code> a little less annoying.
+        <ul>
+            <li>Pins <code>package-info.java</code> to the top of its package</li>
+            <li>Adds a subtle badge to packages containing <code>package-info.java</code></li>
+            <li>Provides an optional custom icon for <code>package-info.java</code></li>
+            <li>Adds package context menu actions for creating, editing, and deleting <code>package-info.java</code></li>
+            <li>Optionally hides <code>package-info.java</code> while keeping actions available from the package context menu</li>
+        </ul>
     ]]></description>
+
+    <change-notes><![CDATA[
+        <h3>Version 0.5.0</h3>
+        <ul>
+            <li>Supports IntelliJ IDEA 2024.2 and newer</li>
+            <li>Fixed an error when expanding a non-source directory containing <code>package-info.java</code></li>
+        </ul>
+    ]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>

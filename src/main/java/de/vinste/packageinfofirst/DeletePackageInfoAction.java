@@ -31,7 +31,7 @@ public final class DeletePackageInfoAction extends DumbAwareAction {
             return;
         }
 
-        PsiJavaFile packageInfo = ReadAction.computeBlocking(
+        PsiJavaFile packageInfo = ReadAction.compute(
                 () -> EditPackageInfoAction.findPackageInfo(event)
         );
         if (packageInfo != null) {

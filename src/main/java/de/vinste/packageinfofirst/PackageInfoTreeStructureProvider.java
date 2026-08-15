@@ -85,11 +85,11 @@ public final class PackageInfoTreeStructureProvider implements TreeStructureProv
 
     static boolean isJavaPackageDirectory(PsiDirectory directory) {
         VirtualFile virtualFile = directory.getVirtualFile();
-        boolean belongsToJavaSources = JavaModuleSourceRootTypes.SOURCES.contains(
-                ProjectRootManager.getInstance(directory.getProject())
-                        .getFileIndex()
-                        .getContainingSourceRootType(virtualFile)
-        );
+        var sourceRootType = ProjectRootManager.getInstance(directory.getProject())
+                .getFileIndex()
+                .getContainingSourceRootType(virtualFile);
+        boolean belongsToJavaSources = sourceRootType != null
+                && JavaModuleSourceRootTypes.SOURCES.contains(sourceRootType);
 
         return belongsToJavaSources
                 && JavaDirectoryService.getInstance().getPackage(directory) != null;
