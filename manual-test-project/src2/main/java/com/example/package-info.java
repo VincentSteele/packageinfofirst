@@ -1,4 +1,4 @@
 /**
- * Manual test package for Package Info First.
+ * package-info.java from src2
  */
 package com.example;
