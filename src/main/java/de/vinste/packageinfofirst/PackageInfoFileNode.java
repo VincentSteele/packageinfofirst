@@ -21,12 +21,13 @@ final class PackageInfoFileNode extends PsiFileNode {
     @Override
     protected void updateImpl(@NotNull PresentationData data) {
         super.updateImpl(data);
-        data.setPresentableText(DISPLAY_NAME);
+        if (PackageInfoSettings.getInstance().isDisplayNameEnabled()) {
+            data.setPresentableText(DISPLAY_NAME);
+        }
     }
 
     @Override
     public @NotNull NodeSortOrder getSortOrder(@NotNull NodeSortSettings settings) {
-        // human comment here: looks hacky as all hell
         return NodeSortOrder.PROJECT_ROOT; 
     }
 }

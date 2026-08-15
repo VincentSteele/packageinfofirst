@@ -32,6 +32,26 @@ public final class PackageInfoSettings implements PersistentStateComponent<Packa
         state.packageInfoHidden = packageInfoHidden;
     }
 
+    public boolean isPackageBadgeEnabled() {
+        return state.packageBadgeEnabled;
+    }
+
+    public void setPackageBadgeEnabled(boolean packageBadgeEnabled) {
+        state.packageBadgeEnabled = packageBadgeEnabled;
+    }
+
+    public boolean isPackageBadgeVisible() {
+        return state.packageInfoHidden || state.packageBadgeEnabled;
+    }
+
+    public boolean isDisplayNameEnabled() {
+        return state.displayNameEnabled;
+    }
+
+    public void setDisplayNameEnabled(boolean displayNameEnabled) {
+        state.displayNameEnabled = displayNameEnabled;
+    }
+
     public boolean isContextActionsEnabled() {
         return state.contextActionsEnabled;
     }
@@ -57,6 +77,8 @@ public final class PackageInfoSettings implements PersistentStateComponent<Packa
     public static final class SettingsState {
         public boolean customIconEnabled = true;
         public boolean packageInfoHidden = false;
+        public boolean packageBadgeEnabled = true;
+        public boolean displayNameEnabled = true;
         public boolean contextActionsEnabled = false;
     }
 }

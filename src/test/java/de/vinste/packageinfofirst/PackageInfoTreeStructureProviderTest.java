@@ -37,6 +37,8 @@ import java.util.List;
 
 public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeInsightFixtureTestCase {
     private boolean originalPackageInfoHidden;
+    private boolean originalPackageBadgeEnabled;
+    private boolean originalDisplayNameEnabled;
     private boolean originalContextActionsEnabled;
 
     @Override
@@ -47,8 +49,12 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
 
         PackageInfoSettings settings = PackageInfoSettings.getInstance();
         originalPackageInfoHidden = settings.isPackageInfoHidden();
+        originalPackageBadgeEnabled = settings.isPackageBadgeEnabled();
+        originalDisplayNameEnabled = settings.isDisplayNameEnabled();
         originalContextActionsEnabled = settings.isContextActionsEnabled();
         settings.setPackageInfoHidden(false);
+        settings.setPackageBadgeEnabled(true);
+        settings.setDisplayNameEnabled(true);
         settings.setContextActionsEnabled(true);
     }
 
@@ -57,6 +63,8 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
         try {
             PackageInfoSettings settings = PackageInfoSettings.getInstance();
             settings.setPackageInfoHidden(originalPackageInfoHidden);
+            settings.setPackageBadgeEnabled(originalPackageBadgeEnabled);
+            settings.setDisplayNameEnabled(originalDisplayNameEnabled);
             settings.setContextActionsEnabled(originalContextActionsEnabled);
         } finally {
             super.tearDown();
@@ -153,6 +161,20 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
         assertEquals(List.of(regularNode), result);
     }
 
+    public void testDisplayNameChangeCanBeDisabled() {
+        PsiFile packageInfoFile = addJavaFile(
+                "com/example/package-info.java",
+                "package com.example;"
+        );
+        PsiFileNode packageInfoNode = new PsiFileNode(getProject(), packageInfoFile, ViewSettings.DEFAULT);
+        PackageInfoSettings.getInstance().setDisplayNameEnabled(false);
+
+        PackageInfoFileNode replacement = (PackageInfoFileNode)modify(List.of(packageInfoNode)).get(0);
+        replacement.update();
+
+        assertEquals("package-info.java", replacement.getPresentation().getPresentableText());
+    }
+
     public void testAddsBadgeOnlyToPackagesWithPackageInfo() {
         PsiFile packageInfoFile = addJavaFile(
                 "com/documented/package-info.java",
@@ -186,6 +208,39 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
 
         assertInstanceOf(documentedPresentation.getIcon(false), LayeredIcon.class);
         assertSame(undocumentedBaseIcon, undocumentedPresentation.getIcon(false));
+    }
+
+    public void testBadgeCanBeDisabledWhenVisibleAndIsForcedOnWhenHidden() {
+        PsiFile packageInfoFile = addJavaFile(
+                "com/documented/package-info.java",
+                "package com.documented;"
+        );
+        PsiDirectory documentedDirectory = packageInfoFile.getContainingDirectory();
+        assertNotNull(documentedDirectory);
+
+        PackageInfoSettings settings = PackageInfoSettings.getInstance();
+        settings.setPackageBadgeEnabled(false);
+        PackageInfoProjectViewNodeDecorator decorator = new PackageInfoProjectViewNodeDecorator();
+
+        Icon visibleBaseIcon = testIcon();
+        PresentationData visiblePresentation = new PresentationData();
+        visiblePresentation.setIcon(visibleBaseIcon);
+        decorator.decorate(
+                new PsiDirectoryNode(getProject(), documentedDirectory, ViewSettings.DEFAULT),
+                visiblePresentation
+        );
+        assertSame(visibleBaseIcon, visiblePresentation.getIcon(false));
+
+        settings.setPackageInfoHidden(true);
+        PresentationData hiddenPresentation = new PresentationData();
+        hiddenPresentation.setIcon(testIcon());
+        decorator.decorate(
+                new PsiDirectoryNode(getProject(), documentedDirectory, ViewSettings.DEFAULT),
+                hiddenPresentation
+        );
+        assertInstanceOf(hiddenPresentation.getIcon(false), LayeredIcon.class);
+        assertFalse(settings.isPackageBadgeEnabled());
+        assertTrue(settings.isPackageBadgeVisible());
     }
 
     public void testDoesNotBadgeResourceDirectoryContainingPackageInfoFile() throws Exception {
@@ -324,6 +379,8 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
         PackageInfoSettings.SettingsState defaults = new PackageInfoSettings.SettingsState();
         assertFalse(defaults.packageInfoHidden);
         assertTrue(defaults.customIconEnabled);
+        assertTrue(defaults.packageBadgeEnabled);
+        assertTrue(defaults.displayNameEnabled);
         assertFalse(defaults.contextActionsEnabled);
     }
 

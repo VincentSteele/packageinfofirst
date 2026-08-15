@@ -23,7 +23,8 @@ public final class PackageInfoProjectViewNodeDecorator implements ProjectViewNod
 
     @Override
     public void decorate(@NotNull ProjectViewNode<?> node, @NotNull PresentationData data) {
-        if (!hasPackageInfo(node.getValue())) {
+        if (!PackageInfoSettings.getInstance().isPackageBadgeVisible()
+                || !hasPackageInfo(node.getValue())) {
             return;
         }
 

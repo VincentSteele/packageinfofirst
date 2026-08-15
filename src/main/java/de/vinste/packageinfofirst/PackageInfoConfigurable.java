@@ -16,8 +16,11 @@ import javax.swing.JPanel;
 
 public final class PackageInfoConfigurable implements Configurable {
     private JCheckBox customIconCheckBox;
+    private JCheckBox displayNameCheckBox;
     private JCheckBox hidePackageInfoCheckBox;
+    private JCheckBox packageBadgeCheckBox;
     private JCheckBox contextActionsCheckBox;
+    private boolean packageBadgeWhenVisible;
     private boolean contextActionsWhenVisible;
     private boolean adjustingControls;
 
@@ -31,8 +34,20 @@ public final class PackageInfoConfigurable implements Configurable {
         PackageInfoSettings settings = PackageInfoSettings.getInstance();
         customIconCheckBox = new JCheckBox("Use the Package Info icon for package-info.java");
         customIconCheckBox.setSelected(settings.isCustomIconEnabled());
+        displayNameCheckBox = new JCheckBox("Display package-info.java as Package Info");
+        displayNameCheckBox.setSelected(settings.isDisplayNameEnabled());
         hidePackageInfoCheckBox = new JCheckBox("Hide Package Info from the Project view");
         hidePackageInfoCheckBox.setSelected(settings.isPackageInfoHidden());
+        packageBadgeCheckBox = new JCheckBox("Show a badge on packages containing package-info.java");
+        packageBadgeCheckBox.setToolTipText(
+                "Always enabled when package-info.java is hidden from the Project view"
+        );
+        packageBadgeWhenVisible = settings.isPackageBadgeEnabled();
+        packageBadgeCheckBox.addItemListener(event -> {
+            if (!adjustingControls && packageBadgeCheckBox.isEnabled()) {
+                packageBadgeWhenVisible = packageBadgeCheckBox.isSelected();
+            }
+        });
         contextActionsCheckBox = new JCheckBox("Show Package Info actions in the package context menu");
         contextActionsCheckBox.setToolTipText(
                 "Always enabled when package-info.java is hidden from the Project view"
@@ -43,12 +58,14 @@ public final class PackageInfoConfigurable implements Configurable {
                 contextActionsWhenVisible = contextActionsCheckBox.isSelected();
             }
         });
-        hidePackageInfoCheckBox.addItemListener(event -> updateContextActionsControl());
-        updateContextActionsControl();
+        hidePackageInfoCheckBox.addItemListener(event -> updateDependentControls());
+        updateDependentControls();
 
         return FormBuilder.createFormBuilder()
                 .addComponent(customIconCheckBox)
+                .addComponent(displayNameCheckBox)
                 .addComponent(hidePackageInfoCheckBox)
+                .addComponent(packageBadgeCheckBox)
                 .addComponent(contextActionsCheckBox)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
@@ -57,37 +74,52 @@ public final class PackageInfoConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         if (customIconCheckBox == null
+                || displayNameCheckBox == null
                 || hidePackageInfoCheckBox == null
+                || packageBadgeCheckBox == null
                 || contextActionsCheckBox == null) {
             return false;
         }
 
         PackageInfoSettings settings = PackageInfoSettings.getInstance();
         return customIconCheckBox.isSelected() != settings.isCustomIconEnabled()
+                || displayNameCheckBox.isSelected() != settings.isDisplayNameEnabled()
                 || hidePackageInfoCheckBox.isSelected() != settings.isPackageInfoHidden()
+                || packageBadgeWhenVisible != settings.isPackageBadgeEnabled()
                 || contextActionsWhenVisible != settings.isContextActionsEnabled();
     }
 
     @Override
     public void apply() {
         if (customIconCheckBox == null
+                || displayNameCheckBox == null
                 || hidePackageInfoCheckBox == null
+                || packageBadgeCheckBox == null
                 || contextActionsCheckBox == null) {
             return;
         }
 
         PackageInfoSettings settings = PackageInfoSettings.getInstance();
         boolean customIconEnabled = customIconCheckBox.isSelected();
+        boolean displayNameEnabled = displayNameCheckBox.isSelected();
         boolean packageInfoHidden = hidePackageInfoCheckBox.isSelected();
         boolean iconChanged = settings.isCustomIconEnabled() != customIconEnabled;
+        boolean displayNameChanged = settings.isDisplayNameEnabled() != displayNameEnabled;
         boolean visibilityChanged = settings.isPackageInfoHidden() != packageInfoHidden;
+        boolean packageBadgeChanged = settings.isPackageBadgeEnabled() != packageBadgeWhenVisible;
         boolean contextActionsChanged = settings.isContextActionsEnabled() != contextActionsWhenVisible;
-        if (!iconChanged && !visibilityChanged && !contextActionsChanged) {
+        if (!iconChanged
+                && !displayNameChanged
+                && !visibilityChanged
+                && !packageBadgeChanged
+                && !contextActionsChanged) {
             return;
         }
 
         settings.setCustomIconEnabled(customIconEnabled);
+        settings.setDisplayNameEnabled(displayNameEnabled);
         settings.setPackageInfoHidden(packageInfoHidden);
+        settings.setPackageBadgeEnabled(packageBadgeWhenVisible);
         settings.setContextActionsEnabled(contextActionsWhenVisible);
         for (Project project : ProjectManager.getInstance().getOpenProjects()) {
             ProjectView.getInstance(project).refresh();
@@ -103,7 +135,9 @@ public final class PackageInfoConfigurable implements Configurable {
     @Override
     public void reset() {
         if (customIconCheckBox == null
+                || displayNameCheckBox == null
                 || hidePackageInfoCheckBox == null
+                || packageBadgeCheckBox == null
                 || contextActionsCheckBox == null) {
             return;
         }
@@ -111,27 +145,35 @@ public final class PackageInfoConfigurable implements Configurable {
         PackageInfoSettings settings = PackageInfoSettings.getInstance();
         adjustingControls = true;
         customIconCheckBox.setSelected(settings.isCustomIconEnabled());
+        displayNameCheckBox.setSelected(settings.isDisplayNameEnabled());
         hidePackageInfoCheckBox.setSelected(settings.isPackageInfoHidden());
+        packageBadgeWhenVisible = settings.isPackageBadgeEnabled();
         contextActionsWhenVisible = settings.isContextActionsEnabled();
         adjustingControls = false;
-        updateContextActionsControl();
+        updateDependentControls();
     }
 
     @Override
     public void disposeUIResources() {
         customIconCheckBox = null;
+        displayNameCheckBox = null;
         hidePackageInfoCheckBox = null;
+        packageBadgeCheckBox = null;
         contextActionsCheckBox = null;
         adjustingControls = false;
     }
 
-    private void updateContextActionsControl() {
-        if (hidePackageInfoCheckBox == null || contextActionsCheckBox == null) {
+    private void updateDependentControls() {
+        if (hidePackageInfoCheckBox == null
+                || packageBadgeCheckBox == null
+                || contextActionsCheckBox == null) {
             return;
         }
 
         boolean packageInfoHidden = hidePackageInfoCheckBox.isSelected();
         adjustingControls = true;
+        packageBadgeCheckBox.setSelected(packageInfoHidden || packageBadgeWhenVisible);
+        packageBadgeCheckBox.setEnabled(!packageInfoHidden);
         contextActionsCheckBox.setSelected(packageInfoHidden || contextActionsWhenVisible);
         contextActionsCheckBox.setEnabled(!packageInfoHidden);
         adjustingControls = false;
