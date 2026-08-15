@@ -206,8 +206,34 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
                 undocumentedPresentation
         );
 
-        assertInstanceOf(documentedPresentation.getIcon(false), LayeredIcon.class);
+        LayeredIcon documentedIcon = assertInstanceOf(
+                documentedPresentation.getIcon(false),
+                LayeredIcon.class
+        );
+        assertSame(PackageInfoProjectViewNodeDecorator.BADGE, documentedIcon.getIcon(1));
         assertSame(undocumentedBaseIcon, undocumentedPresentation.getIcon(false));
+    }
+
+    public void testUsesErrorBadgeWhenPackageInfoIsAProblemFile() {
+        PsiFile packageInfoFile = addJavaFile(
+                "com/documented/package-info.java",
+                "package com.documented;"
+        );
+        PsiDirectory documentedDirectory = packageInfoFile.getContainingDirectory();
+        assertNotNull(documentedDirectory);
+
+        PresentationData presentation = new PresentationData();
+        presentation.setIcon(testIcon());
+        new PackageInfoProjectViewNodeDecorator(file -> file.equals(packageInfoFile)).decorate(
+                new PsiDirectoryNode(getProject(), documentedDirectory, ViewSettings.DEFAULT),
+                presentation
+        );
+
+        LayeredIcon decoratedIcon = assertInstanceOf(
+                presentation.getIcon(false),
+                LayeredIcon.class
+        );
+        assertSame(PackageInfoProjectViewNodeDecorator.ERROR_BADGE, decoratedIcon.getIcon(1));
     }
 
     public void testBadgeCanBeDisabledWhenVisibleAndIsForcedOnWhenHidden() {
