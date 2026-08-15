@@ -15,11 +15,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <h3>Version 0.5.0</h3>
-        <ul>
-            <li>Supports IntelliJ IDEA 2024.2 and newer</li>
-            <li>Fixed an error when expanding a non-source directory containing <code>package-info.java</code></li>
-        </ul>
+        <!-- TODO: Add version 0.6.0 change notes before release. -->
     ]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
