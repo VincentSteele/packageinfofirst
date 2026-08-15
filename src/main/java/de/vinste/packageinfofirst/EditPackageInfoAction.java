@@ -37,7 +37,7 @@ public final class EditPackageInfoAction extends DumbAwareAction {
             return;
         }
 
-        PsiJavaFile packageInfo = ReadAction.computeBlocking(() -> findPackageInfo(event));
+        PsiJavaFile packageInfo = ReadAction.compute(() -> findPackageInfo(event));
         VirtualFile file = packageInfo != null ? packageInfo.getVirtualFile() : null;
         if (file != null) {
             previewDescriptor(project, file).navigate(true);

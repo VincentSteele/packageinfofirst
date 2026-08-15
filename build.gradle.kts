@@ -9,8 +9,8 @@ group = providers.gradleProperty("group").get()
 version = providers.gradleProperty("version").get()
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 dependencies {
@@ -36,15 +36,36 @@ intellijPlatform {
 
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = "262"
+            sinceBuild = "242"
             untilBuild = provider { null }
         }
+    }
+
+    pluginVerification {
+        ides {
+            val localIdePath = providers.gradleProperty("localIdePath")
+            if (localIdePath.isPresent) {
+                local(file(localIdePath.get()))
+            } else {
+                current()
+            }
+        }
+    }
+
+    signing {
+        certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+        privateKey = providers.environmentVariable("PRIVATE_KEY")
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+    }
+
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN")
     }
 }
 
 tasks {
     withType<JavaCompile>().configureEach {
-        options.release = 25
+        options.release = 21
         options.encoding = "UTF-8"
     }
 

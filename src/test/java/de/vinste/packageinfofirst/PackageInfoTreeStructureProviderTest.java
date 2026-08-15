@@ -94,6 +94,22 @@ public final class PackageInfoTreeStructureProviderTest extends LightJavaCodeIns
         assertFalse(PackageInfoTreeStructureProvider.isJavaPackageInfo(detachedPackageInfo));
     }
 
+    public void testIgnoresPackageInfoOutsideJavaSourceRoot() {
+        PsiFile packageInfoFile = myFixture.addFileToProject(
+                "unmarked/package-info.java",
+                "package unmarked;"
+        );
+        PsiDirectory directory = packageInfoFile.getContainingDirectory();
+        assertNotNull(directory);
+        PsiTestUtil.addExcludedRoot(getModule(), directory.getVirtualFile());
+
+        assertFalse(PackageInfoTreeStructureProvider.isJavaPackageDirectory(directory));
+        assertFalse(PackageInfoTreeStructureProvider.isJavaPackageInfo(packageInfoFile));
+
+        PsiFileNode node = new PsiFileNode(getProject(), packageInfoFile, ViewSettings.DEFAULT);
+        assertEquals(List.of(node), modify(List.of(node)));
+    }
+
     @SuppressWarnings("UnstableApiUsage")
     public void testShowsTopSortedPackageInfoNodeByDefault() {
         PsiFile regularFile = addJavaFile(
