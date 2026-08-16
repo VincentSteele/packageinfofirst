@@ -2,14 +2,25 @@
 
 An IntelliJ IDEA plugin that makes dealing with `package-info.java` a little less annoying.
 
-Choose how `package-info.java` appears in the Project view:
+## Choose how you work
 
-- **Keep it visible:** `package-info.java` is always pinned to the top of its package, so it is easy to find and access.
-- **Keep it out of the way:** Hide `package-info.java` while a package badge keeps its presence visible and context menu actions let you create, edit, or delete the file.
+### Keep it visible
 
-When `package-info.java` is visible, the package badge and context-menu actions can also be enabled independently.
+Keep `package-info.java` pinned to the top of its package, where it is always easy to find and access.
+
+![Package Info pinned to the top of a package in the Project view](docs/images/visible-at-top.png)
+
+### Keep it out of the way
+
+Hide `package-info.java` from the Project view while a package badge keeps its presence visible. Context menu actions let you create, edit, or delete the file without hunting for it.
+
+![A package badge and Package Info context menu actions](docs/images/hidden-with-context-actions.png)
+
+### Configure it your way
 
 Configure the presentation and context menu options under **Settings | Tools | Package Info First**.
+
+![Package Info First settings in IntelliJ IDEA](docs/images/settings.png)
 
 ## Installation
 
