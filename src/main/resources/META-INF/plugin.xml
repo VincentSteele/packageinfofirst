@@ -5,12 +5,11 @@
 
     <description><![CDATA[
         An IntelliJ IDEA plugin that makes dealing with <code>package-info.java</code> a little less annoying.
-        <p>Choose how <code>package-info.java</code> appears in the Project view:</p>
+        <p>Choose how you work with <code>package-info.java</code> in the Project view:</p>
         <ul>
-            <li><strong>Keep it visible:</strong> <code>package-info.java</code> is always pinned to the top of its package, so it is easy to find and access.</li>
-            <li><strong>Keep it out of the way:</strong> Hide <code>package-info.java</code> while a package badge keeps its presence visible and context menu actions let you create, edit, or delete the file.</li>
+            <li><strong>Keep it visible:</strong> Pin <code>package-info.java</code> to the top of its package, where it is always easy to find and access.</li>
+            <li><strong>Keep it out of the way:</strong> Hide <code>package-info.java</code> from the Project view while a package badge keeps its presence visible. Context menu actions let you create, edit, or delete the file without hunting for it.</li>
         </ul>
-        <p>When <code>package-info.java</code> is visible, the package badge and context-menu actions can also be enabled independently.</p>
         <p>Configure the presentation and context menu options under <strong>Settings | Tools | Package Info First</strong>.</p>
     ]]></description>
 
